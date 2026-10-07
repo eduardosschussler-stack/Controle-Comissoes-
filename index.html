@@ -1,0 +1,793 @@
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#182620"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Comissões"><link rel="manifest" href="manifest.json"><style>
+  #ledger-root {
+    --paper: #EEF0E7;
+    --surface: #FFFDF8;
+    --ink: #182620;
+    --ink-soft: #57614F;
+    --line: #CBD0BF;
+    --emerald: #1E7A5C;
+    --emerald-soft: #E4F0E9;
+    --ochre: #96692A;
+    --ochre-soft: #F3E9D8;
+    --brick: #A5392F;
+    --brick-soft: #F5E4E1;
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    min-height: 100%;
+    padding: 28px 20px 60px;
+    box-sizing: border-box;
+  }
+  #ledger-root * { box-sizing: border-box; }
+  #ledger-root .wrap { max-width: 980px; margin: 0 auto; }
+
+  #ledger-root .masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #ledger-root h1 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  #ledger-root .masthead .sub {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+  }
+
+  #ledger-root .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+  #ledger-root .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 14px 16px;
+    position: relative;
+  }
+  #ledger-root .stat-card .label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  #ledger-root .stat-card .val {
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 21px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  #ledger-root .stat-card.emerald { border-left: 3px solid var(--emerald); }
+  #ledger-root .stat-card.ochre { border-left: 3px solid var(--ochre); }
+  #ledger-root .stat-card.brick { border-left: 3px solid var(--brick); }
+  #ledger-root .stat-card.ink { border-left: 3px solid var(--ink); }
+
+  #ledger-root .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  #ledger-root .tab {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 14.5px;
+    font-weight: 500;
+    padding: 9px 16px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  #ledger-root .tab.active {
+    color: var(--ink);
+    border-bottom: 2px solid var(--emerald);
+  }
+
+  #ledger-root .panel { display: none; }
+  #ledger-root .panel.active { display: block; }
+
+  #ledger-root .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  #ledger-root .card h2 {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  #ledger-root .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  #ledger-root .field { display: flex; flex-direction: column; gap: 5px; }
+  #ledger-root .field.span2 { grid-column: span 2; }
+  #ledger-root label { font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); }
+  #ledger-root input[type=text], #ledger-root input[type=date], #ledger-root input[type=number], #ledger-root select, #ledger-root textarea {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-size: 14px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: #fff;
+    color: var(--ink);
+  }
+  #ledger-root input:focus, #ledger-root select:focus, #ledger-root textarea:focus {
+    outline: 2px solid var(--emerald);
+    outline-offset: 1px;
+  }
+  #ledger-root .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  #ledger-root .checkbox-row input { width: 16px; height: 16px; }
+  #ledger-root .checkbox-row label { text-transform: none; font-size: 13.5px; color: var(--ink); }
+
+  #ledger-root .installment-block {
+    display: none;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--line);
+  }
+  #ledger-root .installment-block.show { display: grid; }
+
+  #ledger-root .btn {
+    font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    padding: 10px 18px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    background: var(--ink);
+    color: #fff;
+    margin-top: 14px;
+  }
+  #ledger-root .btn:hover { background: #0e1712; }
+  #ledger-root .btn.secondary {
+    background: transparent;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+    margin-left: 8px;
+  }
+  #ledger-root .btn.danger { background: var(--brick); }
+  #ledger-root .btn.small { padding: 5px 10px; font-size: 12px; margin-top: 0; }
+
+  #ledger-root table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  #ledger-root thead th {
+    text-align: left;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--ink);
+    padding: 6px 8px;
+  }
+  #ledger-root tbody td {
+    padding: 9px 8px;
+    border-bottom: 1px dashed var(--line);
+    vertical-align: top;
+  }
+  #ledger-root tbody tr:hover { background: #F7F6F0; }
+  #ledger-root .mono { font-family: 'Courier New', Consolas, monospace; font-variant-numeric: tabular-nums; }
+  #ledger-root .pos { color: var(--emerald); }
+  #ledger-root .neg { color: var(--brick); }
+  #ledger-root .tag {
+    display: inline-block;
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  #ledger-root .tag.pendente { background: var(--ochre-soft); color: var(--ochre); }
+  #ledger-root .tag.pago { background: var(--emerald-soft); color: var(--emerald); }
+
+  #ledger-root .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+  }
+
+  #ledger-root .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  #ledger-root .bar-label { width: 74px; font-size: 12px; font-family: 'Courier New', Consolas, monospace; flex-shrink: 0; }
+  #ledger-root .bar-track { flex: 1; background: #E7E5DA; border-radius: 2px; height: 20px; position: relative; overflow: hidden; }
+  #ledger-root .bar-fill { height: 100%; background: var(--emerald); border-radius: 2px 0 0 2px; }
+  #ledger-root .bar-fill.deduct { background: var(--brick); position: absolute; top:0; left:0; opacity: 0.55;}
+  #ledger-root .bar-val { width: 100px; text-align: right; font-family: 'Courier New', Consolas, monospace; font-size: 12px; flex-shrink: 0; }
+
+  #ledger-root .row-actions button {
+    background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 12px; text-decoration: underline; padding: 0; margin-right: 8px;
+  }
+  #ledger-root .row-actions button:hover { color: var(--brick); }
+
+  @media (max-width: 640px) {
+    #ledger-root .field.span2 { grid-column: span 1; }
+    #ledger-root table { font-size: 12px; }
+    #ledger-root thead th:nth-child(n+5), #ledger-root tbody td:nth-child(n+5) { display: none; }
+  }
+</style><style>html,body{margin:0;padding:0;min-height:100%;background:#EEF0E7}body{overscroll-behavior-y:none}.install-banner{display:none;position:sticky;top:8px;z-index:20;margin:0 auto 14px;max-width:980px;padding:10px 12px;border:1px solid #CBD0BF;border-radius:8px;background:#FFFDF8;box-shadow:0 4px 16px rgba(24,38,32,.08);align-items:center;justify-content:space-between;gap:10px}.install-banner.show{display:flex}.install-banner span{font-size:13px}.install-banner button{margin:0;white-space:nowrap;padding:8px 12px}@media(max-width:640px){#ledger-root{padding-left:12px;padding-right:12px}#ledger-root .stats{grid-template-columns:1fr 1fr;gap:8px}#ledger-root .stat-card{padding:11px 10px}#ledger-root .stat-card .val{font-size:16px}#ledger-root .tabs{overflow-x:auto;position:sticky;top:0;z-index:10;background:#EEF0E7}#ledger-root .tab{flex:0 0 auto;padding:9px 11px;font-size:13px}#ledger-root .card{padding:14px}#ledger-root input[type=text],#ledger-root input[type=date],#ledger-root input[type=number],#ledger-root select,#ledger-root textarea{font-size:16px;min-height:44px}#ledger-root .btn{min-height:44px;width:100%;margin-top:12px}#ledger-root .btn.secondary{margin-left:0}#ledger-root table{display:block;overflow-x:auto;white-space:nowrap}}</style>
+
+<div id="local-file-warning" style="display:none;margin:12px auto;max-width:980px;padding:12px;border:1px solid #d7b98e;border-radius:8px;background:#fff7e8;font-size:14px">Para usar e instalar no iPhone, abra esta página pelo endereço HTTPS do GitHub Pages. Não abra o arquivo HTML diretamente pelo app Arquivos.</div>
+<div id="ledger-root"><div class="install-banner" id="install-banner"><span>Instale o Livro de Comissões na tela inicial.</span><button class="btn small" id="install-btn">Instalar</button></div>
+  <div class="wrap">
+    <div class="masthead">
+      <h1>Livro de Comissões</h1>
+      <div><div class="sub">Controle de recebimentos e descontos</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><button class="btn small secondary" id="export-backup-btn" type="button">Exportar backup</button><label class="btn small secondary" style="cursor:pointer;margin:0">Importar backup<input id="import-backup-input" type="file" accept=".json,application/json" style="display:none"></label></div></div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="lancamentos">Lançamentos</button>
+      <button class="tab" data-tab="parcelas">Parcelas futuras</button>
+      <button class="tab" data-tab="resumo">Resumo mensal</button>
+    </div>
+
+    <div class="panel active" id="panel-lancamentos">
+      <div class="card">
+        <h2>Nova comissão</h2>
+        <form id="form-entry">
+          <div class="form-grid">
+            <div class="field">
+              <label>Data do recebimento</label>
+              <input type="date" id="f-date" required>
+            </div>
+            <div class="field span2">
+              <label>Cliente / descrição</label>
+              <input type="text" id="f-client" placeholder="Ex: Venda Cliente ABC Ltda" required>
+            </div>
+            <div class="field">
+              <label>Valor bruto (R$)</label>
+              <input type="text" inputmode="decimal" id="f-gross" placeholder="R$ 0,00" required>
+            </div>
+          </div>
+
+          <div class="checkbox-row">
+            <input type="checkbox" id="f-has-discount">
+            <label for="f-has-discount">Esta comissão possui desconto</label>
+          </div>
+
+          <div class="installment-block" id="discount-block">
+            <div class="field">
+              <label>Valor total do desconto (R$)</label>
+              <input type="text" inputmode="decimal" id="f-discount" placeholder="R$ 0,00">
+            </div>
+            <div class="field">
+              <label>Forma do desconto</label>
+              <select id="f-parcelado">
+                <option value="nao">À vista (no mesmo mês)</option>
+                <option value="sim">Parcelado</option>
+              </select>
+            </div>
+            <div class="field" id="field-parcelas" style="display:none;">
+              <label>Número de parcelas</label>
+              <input type="number" id="f-parcelas" min="1" step="1" value="2">
+            </div>
+            <div class="field" id="field-mes-inicial" style="display:none;">
+              <label>Mês da 1ª parcela</label>
+              <input type="date" id="f-mes-inicial">
+            </div>
+          </div>
+
+          <div class="field span2" style="margin-top:12px;">
+            <label>Observações</label>
+            <textarea id="f-notes" rows="2" placeholder="Opcional"></textarea>
+          </div>
+
+          <button type="submit" class="btn">Salvar comissão</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Comissões lançadas</h2>
+        <div id="entries-table"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-parcelas">
+      <div class="card">
+        <h2>Novo desconto avulso (não vinculado a uma comissão específica)</h2>
+        <form id="form-discount">
+          <div class="form-grid">
+            <div class="field span2">
+              <label>Descrição</label>
+              <input type="text" id="gd-desc" placeholder="Ex: Adiantamento, empréstimo, ajuste administrativo" required>
+            </div>
+            <div class="field">
+              <label>Valor total (R$)</label>
+              <input type="text" inputmode="decimal" id="gd-total" placeholder="R$ 0,00" required>
+            </div>
+            <div class="field">
+              <label>Número de parcelas</label>
+              <input type="number" id="gd-parcelas" min="1" step="1" value="2" required>
+            </div>
+            <div class="field">
+              <label>Mês da 1ª parcela</label>
+              <input type="date" id="gd-mes-inicial" required>
+            </div>
+          </div>
+          <button type="submit" class="btn">Salvar desconto avulso</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Descontos avulsos cadastrados</h2>
+        <div id="general-discounts-table"></div>
+      </div>
+
+      <div class="card">
+        <h2>Cronograma de descontos parcelados</h2>
+        <div id="installments-table"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="panel-resumo">
+      <div class="card">
+        <h2>Recebido × descontado por mês</h2>
+        <div id="monthly-chart"></div>
+      </div>
+      <div class="card">
+        <h2>Detalhe mensal</h2>
+        <div id="monthly-table"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>(function(){const INITIAL_BACKUP={"entries": [{"id": "emu3fs41rh8w88", "date": "2026-08-05", "client": "Primeira parcela renovação Mata", "gross": 10000, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-08-05", "notes": "Primeira parcela de três.", "paidInstallments": []}, {"id": "emu3fsqpb8ayqq", "date": "2026-09-05", "client": "Segunda parcela renovação Mata", "gross": 10000, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-09-05", "notes": "Segunda parcela de três", "paidInstallments": []}, {"id": "emu3fywk9znhov", "date": "2026-10-05", "client": "Terceira Parcela Renovação Mata", "gross": 241.07, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-10-05", "notes": "Terceira parcela renovação Mata.", "paidInstallments": []}, {"id": "emu3fzm3d4hqi8", "date": "2026-10-05", "client": "Entregas Legais Toropi", "gross": 7140, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-10-05", "notes": "", "paidInstallments": []}, {"id": "emu3g04cfdcts0", "date": "2026-10-05", "client": "Datacenter Mata", "gross": 370, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-10-05", "notes": "", "paidInstallments": []}, {"id": "emu3g11rrciq7l", "date": "2026-10-05", "client": "Protocolo Ibarama", "gross": 307, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-10-05", "notes": "", "paidInstallments": []}, {"id": "emu3g26dsod2dy", "date": "2026-11-05", "client": "Entregas Legais Barra do Quaraí", "gross": 5300, "discount": 0, "parcelado": false, "parcelas": 1, "mesInicial": "2026-11-05", "notes": "", "paidInstallments": []}, {"id":"emuynsttm1zfin","date":"2026-11-05","client":"Entregas Legais Câmara Toropi","gross":2646,"discount":0,"parcelado":false,"parcelas":1,"mesInicial":"2026-11-05","notes":"","paidInstallments":[]}], "generalDiscounts": [{"id": "emu3g841x42ngz", "description": "Batida HB20", "totalValue": 2500, "parcelas": 5, "mesInicial": "2026-08-05", "paidInstallments": []}]};try{if(!localStorage.getItem('commissions-v1')&&INITIAL_BACKUP) localStorage.setItem('commissions-v1',JSON.stringify(INITIAL_BACKUP));}catch(e){} const m={name:'Livro de Comissões',short_name:'Comissões',start_url:'.',display:'standalone',background_color:'#EEF0E7',theme_color:'#182620'};try{const x=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});document.getElementById('app-manifest').href=URL.createObjectURL(x);}catch(e){} let dp=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;document.getElementById('install-banner').classList.add('show')});document.getElementById('install-btn').onclick=async()=>{if(!dp){alert('No iPhone: toque em Compartilhar → Adicionar à Tela de Início. No Android: abra o menu do navegador → Instalar aplicativo.');return}dp.prompt();await dp.userChoice;dp=null;document.getElementById('install-banner').classList.remove('show')}})();</script>
+<script>
+(function() {
+  const STORAGE_KEY = 'commissions-v1';
+  let entries = [];
+  let generalDiscounts = [];
+  let loaded = false;
+
+  const fmtBRL = (n) => (n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  const monthLabels = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const monthKey = (dateStr) => dateStr ? dateStr.slice(0,7) : '';
+  const monthLabel = (key) => {
+    if (!key) return '';
+    const [y,m] = key.split('-');
+    return monthLabels[parseInt(m,10)-1] + '/' + y;
+  };
+  const addMonths = (dateStr, n) => {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setMonth(d.getMonth() + n);
+    return d.toISOString().slice(0,10);
+  };
+  const uid = () => 'e' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+  // ---------- máscara de moeda (R$ 10.000,00) ----------
+  function applyCurrencyMask(el) {
+    let digits = el.value.replace(/\D/g, '');
+    if (!digits) { el.value = ''; return; }
+    digits = digits.replace(/^0+(?=\d)/, '');
+    while (digits.length < 3) digits = '0' + digits;
+    const cents = digits.slice(-2);
+    let intPart = digits.slice(0, -2).replace(/^0+(?=\d)/, '') || '0';
+    intPart = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    el.value = 'R$ ' + intPart + ',' + cents;
+  }
+  function currencyToNumber(el) {
+    const digits = el.value.replace(/\D/g, '');
+    if (!digits) return NaN;
+    return parseInt(digits, 10) / 100;
+  }
+  function bindCurrencyMask(id) {
+    const el = document.getElementById(id);
+    el.addEventListener('input', () => applyCurrencyMask(el));
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          entries = parsed;
+          generalDiscounts = [];
+        } else {
+          entries = parsed.entries || [];
+          generalDiscounts = parsed.generalDiscounts || [];
+        }
+      }
+    } catch (e) {
+      entries = [];
+      generalDiscounts = [];
+    }
+    loaded = true;
+    renderAll();
+  }
+
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ entries, generalDiscounts }));
+    } catch (e) {
+      console.error('Falha ao salvar', e);
+      alert('Não foi possível salvar os dados neste navegador. Verifique se os cookies ou o armazenamento local não estão bloqueados.');
+    }
+  }
+
+  // ---------- computed helpers ----------
+  function entryInstallments(entry) {
+    if (!entry.parcelado) return [];
+    const list = [];
+    const perValue = entry.discount / entry.parcelas;
+    for (let i = 0; i < entry.parcelas; i++) {
+      const mk = monthKey(addMonths(entry.mesInicial, i));
+      list.push({
+        entryId: entry.id,
+        type: 'commission',
+        client: entry.client,
+        monthKey: mk,
+        value: perValue,
+        index: i + 1,
+        total: entry.parcelas,
+        status: entry.paidInstallments && entry.paidInstallments.includes(i) ? 'pago' : 'pendente'
+      });
+    }
+    return list;
+  }
+
+  function generalDiscountInstallments(gd) {
+    const list = [];
+    const perValue = gd.totalValue / gd.parcelas;
+    for (let i = 0; i < gd.parcelas; i++) {
+      const mk = monthKey(addMonths(gd.mesInicial, i));
+      list.push({
+        entryId: gd.id,
+        type: 'general',
+        client: gd.description,
+        monthKey: mk,
+        value: perValue,
+        index: i + 1,
+        total: gd.parcelas,
+        status: gd.paidInstallments && gd.paidInstallments.includes(i) ? 'pago' : 'pendente'
+      });
+    }
+    return list;
+  }
+
+  function allInstallments() {
+    let out = [];
+    entries.forEach(e => { out = out.concat(entryInstallments(e)); });
+    generalDiscounts.forEach(gd => { out = out.concat(generalDiscountInstallments(gd)); });
+    out.sort((a,b) => a.monthKey.localeCompare(b.monthKey));
+    return out;
+  }
+
+  function monthlyAggregate() {
+    const map = {};
+    const ensure = (mk) => {
+      if (!map[mk]) map[mk] = { received: 0, discountAvista: 0, discountParcelas: 0 };
+      return map[mk];
+    };
+    entries.forEach(e => {
+      const mk = monthKey(e.date);
+      const bucket = ensure(mk);
+      bucket.received += e.gross;
+      if (!e.parcelado && e.discount) bucket.discountAvista += e.discount;
+    });
+    allInstallments().forEach(inst => {
+      const bucket = ensure(inst.monthKey);
+      bucket.discountParcelas += inst.value;
+    });
+    const keys = Object.keys(map).sort();
+    return keys.map(k => ({
+      key: k,
+      label: monthLabel(k),
+      received: map[k].received,
+      discountAvista: map[k].discountAvista,
+      discountParcelas: map[k].discountParcelas,
+      net: map[k].received - map[k].discountAvista - map[k].discountParcelas
+    }));
+  }
+
+  // ---------- render ----------
+  function renderStats() {
+    const totalReceived = entries.reduce((s,e) => s + e.gross, 0);
+    const totalDiscountAvista = entries.filter(e => !e.parcelado).reduce((s,e) => s + (e.discount||0), 0);
+    const insts = allInstallments();
+    const totalDiscountParceladoPendente = insts.filter(i => i.status === 'pendente').reduce((s,i) => s + i.value, 0);
+    const totalNetSoFar = totalReceived - totalDiscountAvista;
+
+    const stats = document.getElementById('stats');
+    stats.innerHTML = `
+      <div class="stat-card emerald"><div class="label">Total recebido (bruto)</div><div class="val">${fmtBRL(totalReceived)}</div></div>
+      <div class="stat-card brick"><div class="label">Descontos à vista</div><div class="val">${fmtBRL(totalDiscountAvista)}</div></div>
+      <div class="stat-card ochre"><div class="label">Descontos parcelados pendentes</div><div class="val">${fmtBRL(totalDiscountParceladoPendente)}</div></div>
+      <div class="stat-card ink"><div class="label">Líquido já apurado</div><div class="val">${fmtBRL(totalNetSoFar)}</div></div>
+    `;
+  }
+
+  function renderEntriesTable() {
+    const container = document.getElementById('entries-table');
+    if (!entries.length) {
+      container.innerHTML = '<div class="empty">Nenhuma comissão lançada ainda. Use o formulário acima.</div>';
+      return;
+    }
+    const sorted = [...entries].sort((a,b) => b.date.localeCompare(a.date));
+    let rows = sorted.map(e => {
+      const net = e.gross - (e.discount||0);
+      const discLabel = !e.discount ? '—' :
+        (e.parcelado ? `${fmtBRL(e.discount)} (${e.parcelas}x de ${fmtBRL(e.discount/e.parcelas)})` : fmtBRL(e.discount));
+      return `<tr>
+        <td>${formatDateBR(e.date)}</td>
+        <td>${escapeHTML(e.client)}</td>
+        <td class="mono">${fmtBRL(e.gross)}</td>
+        <td class="mono neg">${discLabel}</td>
+        <td class="mono pos">${fmtBRL(net)}</td>
+        <td class="row-actions"><button data-del="${e.id}">excluir</button></td>
+      </tr>`;
+    }).join('');
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Data</th><th>Cliente</th><th>Bruto</th><th>Desconto</th><th>Líquido</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    container.querySelectorAll('[data-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('Excluir esta comissão e as parcelas de desconto associadas?')) {
+          entries = entries.filter(e => e.id !== btn.dataset.del);
+          persist();
+          renderAll();
+        }
+      });
+    });
+  }
+
+  function renderInstallmentsTable() {
+    const container = document.getElementById('installments-table');
+    const insts = allInstallments();
+    if (!insts.length) {
+      container.innerHTML = '<div class="empty">Nenhum desconto parcelado programado.</div>';
+      return;
+    }
+    let rows = insts.map((i) => `
+      <tr>
+        <td>${monthLabel(i.monthKey)}</td>
+        <td>${escapeHTML(i.client)}</td>
+        <td>${i.type === 'general' ? 'Desconto avulso' : 'Comissão'}</td>
+        <td>${i.index}/${i.total}</td>
+        <td class="mono neg">${fmtBRL(i.value)}</td>
+        <td><span class="tag ${i.status}">${i.status}</span></td>
+        <td class="row-actions"><button data-toggle="${i.type}|${i.entryId}|${i.index-1}">${i.status === 'pendente' ? 'marcar pago' : 'marcar pendente'}</button></td>
+      </tr>`).join('');
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Mês</th><th>Descrição</th><th>Origem</th><th>Parcela</th><th>Valor</th><th>Status</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    container.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const [type, entryId, idxStr] = btn.dataset.toggle.split('|');
+        const idx = parseInt(idxStr, 10);
+        const list = type === 'general' ? generalDiscounts : entries;
+        const item = list.find(x => x.id === entryId);
+        if (!item) return;
+        item.paidInstallments = item.paidInstallments || [];
+        const pos = item.paidInstallments.indexOf(idx);
+        if (pos >= 0) item.paidInstallments.splice(pos, 1);
+        else item.paidInstallments.push(idx);
+        persist();
+        renderAll();
+      });
+    });
+  }
+
+  function renderGeneralDiscountsTable() {
+    const container = document.getElementById('general-discounts-table');
+    if (!generalDiscounts.length) {
+      container.innerHTML = '<div class="empty">Nenhum desconto avulso cadastrado.</div>';
+      return;
+    }
+    let rows = generalDiscounts.map(gd => `
+      <tr>
+        <td>${escapeHTML(gd.description)}</td>
+        <td class="mono neg">${fmtBRL(gd.totalValue)}</td>
+        <td>${gd.parcelas}x de ${fmtBRL(gd.totalValue / gd.parcelas)}</td>
+        <td>${monthLabel(monthKey(gd.mesInicial))}</td>
+        <td class="row-actions"><button data-del-gd="${gd.id}">excluir</button></td>
+      </tr>`).join('');
+    container.innerHTML = `
+      <table>
+        <thead><tr><th>Descrição</th><th>Valor total</th><th>Parcelas</th><th>Início</th><th></th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    container.querySelectorAll('[data-del-gd]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (confirm('Excluir este desconto avulso e suas parcelas?')) {
+          generalDiscounts = generalDiscounts.filter(gd => gd.id !== btn.dataset.delGd);
+          persist();
+          renderAll();
+        }
+      });
+    });
+  }
+
+  function renderMonthly() {
+    const data = monthlyAggregate();
+    const chartEl = document.getElementById('monthly-chart');
+    const tableEl = document.getElementById('monthly-table');
+
+    if (!data.length) {
+      chartEl.innerHTML = '<div class="empty">Sem dados ainda.</div>';
+      tableEl.innerHTML = '';
+      return;
+    }
+
+    const maxVal = Math.max(...data.map(d => d.received), 1);
+    chartEl.innerHTML = data.map(d => {
+      const receivedPct = (d.received / maxVal) * 100;
+      const deductPct = ((d.discountAvista + d.discountParcelas) / maxVal) * 100;
+      return `
+        <div class="bar-row">
+          <div class="bar-label">${d.label}</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${receivedPct}%"></div>
+            <div class="bar-fill deduct" style="width:${deductPct}%"></div>
+          </div>
+          <div class="bar-val">${fmtBRL(d.net)}</div>
+        </div>`;
+    }).join('');
+
+    let rows = data.map(d => `
+      <tr>
+        <td>${d.label}</td>
+        <td class="mono">${fmtBRL(d.received)}</td>
+        <td class="mono neg">${fmtBRL(d.discountAvista)}</td>
+        <td class="mono neg">${fmtBRL(d.discountParcelas)}</td>
+        <td class="mono pos">${fmtBRL(d.net)}</td>
+      </tr>`).join('');
+    tableEl.innerHTML = `
+      <table>
+        <thead><tr><th>Mês</th><th>Recebido</th><th>Desc. à vista</th><th>Desc. parcelado</th><th>Saldo líquido</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function renderAll() {
+    if (!loaded) return;
+    renderStats();
+    renderEntriesTable();
+    renderGeneralDiscountsTable();
+    renderInstallmentsTable();
+    renderMonthly();
+  }
+
+  function formatDateBR(iso) {
+    const [y,m,d] = iso.split('-');
+    return `${d}/${m}/${y}`;
+  }
+  function escapeHTML(s) {
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- tabs ----------
+  document.querySelectorAll('#ledger-root .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#ledger-root .tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('#ledger-root .panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- form logic ----------
+  const hasDiscountEl = document.getElementById('f-has-discount');
+  const discountBlock = document.getElementById('discount-block');
+  const parceladoEl = document.getElementById('f-parcelado');
+  const fieldParcelas = document.getElementById('field-parcelas');
+  const fieldMesInicial = document.getElementById('field-mes-inicial');
+  const dateEl = document.getElementById('f-date');
+  const mesInicialEl = document.getElementById('f-mes-inicial');
+
+  hasDiscountEl.addEventListener('change', () => {
+    discountBlock.classList.toggle('show', hasDiscountEl.checked);
+  });
+  parceladoEl.addEventListener('change', () => {
+    const isParc = parceladoEl.value === 'sim';
+    fieldParcelas.style.display = isParc ? 'flex' : 'none';
+    fieldMesInicial.style.display = isParc ? 'flex' : 'none';
+  });
+  dateEl.addEventListener('change', () => {
+    if (dateEl.value && !mesInicialEl.value) {
+      mesInicialEl.value = addMonths(dateEl.value, 1);
+    }
+  });
+
+  bindCurrencyMask('f-gross');
+  bindCurrencyMask('f-discount');
+  bindCurrencyMask('gd-total');
+
+  document.getElementById('form-discount').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const description = document.getElementById('gd-desc').value.trim();
+    const totalValue = currencyToNumber(document.getElementById('gd-total'));
+    const parcelas = Math.max(1, parseInt(document.getElementById('gd-parcelas').value || '1', 10));
+    const mesInicial = document.getElementById('gd-mes-inicial').value;
+
+    if (!description || isNaN(totalValue) || !mesInicial) return;
+
+    generalDiscounts.push({
+      id: uid(),
+      description,
+      totalValue,
+      parcelas,
+      mesInicial,
+      paidInstallments: []
+    });
+
+    persist();
+    renderAll();
+    ev.target.reset();
+  });
+
+  document.getElementById('form-entry').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const date = dateEl.value;
+    const client = document.getElementById('f-client').value.trim();
+    const gross = currencyToNumber(document.getElementById('f-gross'));
+    const hasDiscount = hasDiscountEl.checked;
+    const discount = hasDiscount ? (currencyToNumber(document.getElementById('f-discount')) || 0) : 0;
+    const parcelado = hasDiscount && parceladoEl.value === 'sim';
+    const parcelas = parcelado ? Math.max(1, parseInt(document.getElementById('f-parcelas').value || '1', 10)) : 1;
+    const mesInicial = parcelado ? (mesInicialEl.value || addMonths(date, 1)) : date;
+    const notes = document.getElementById('f-notes').value.trim();
+
+    if (!date || !client || isNaN(gross)) return;
+
+    entries.push({
+      id: uid(),
+      date, client, gross,
+      discount: hasDiscount ? discount : 0,
+      parcelado,
+      parcelas,
+      mesInicial,
+      notes,
+      paidInstallments: []
+    });
+
+    persist();
+    renderAll();
+    ev.target.reset();
+    discountBlock.classList.remove('show');
+    fieldParcelas.style.display = 'none';
+    fieldMesInicial.style.display = 'none';
+  });
+
+  document.getElementById('export-backup-btn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({entries,generalDiscounts},null,2)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='backup-comissões-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)});document.getElementById('import-backup-input').addEventListener('change',async ev=>{const f=ev.target.files[0];if(!f)return;try{const x=JSON.parse(await f.text());if(!Array.isArray(x.entries)||!Array.isArray(x.generalDiscounts))throw 0;if(!confirm('Importar este backup e substituir os dados atuais neste aparelho?'))return;entries=x.entries;generalDiscounts=x.generalDiscounts;persist();renderAll();alert('Backup importado com sucesso.')}catch(e){alert('O backup é inválido ou está corrompido.')}ev.target.value=''});
+  load();
+})();
+</script>
+<script>
+if (location.protocol === 'file:') {
+  const w = document.getElementById('local-file-warning');
+  if (w) w.style.display = 'block';
+}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+}
+</script>
